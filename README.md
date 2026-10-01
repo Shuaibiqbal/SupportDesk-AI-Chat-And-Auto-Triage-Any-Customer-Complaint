@@ -8,12 +8,6 @@ Built with Python and the raw OpenAI SDK — no agent framework, on purpose.
 
 **Tech:** Python · OpenAI API · Pydantic · python-dotenv  ·  **Type:** Multi-agent (2 agents + router)  ·  **Level:** Beginner
 
-## Overview
-
-A 2-agent support desk that runs in your terminal. A **Concierge** agent chats naturally and remembers the conversation. A **Triage** agent turns a messy, free-text complaint into a clean, validated support ticket. A **router** decides, for every message, which agent should handle it — so the user never has to pick a mode.
-
-Built with Python and the raw OpenAI SDK — no agent framework, on purpose.
-
 ## Why
 
 A real support inbox mixes casual questions with genuine complaints. Sorting every message by hand is slow and doesn't scale; making users pick a category ("is this a complaint?") pushes the work onto them. SupportDesk AI sorts each message automatically, chats when that's what's needed, and files a structured ticket when something is actually wrong.

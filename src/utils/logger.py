@@ -1,16 +1,17 @@
 import logging
-
+import os 
 def get_logger(name: str) -> logging.Logger:
-    
+
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
 
-    screen_handler = logging.StreamHandler()
-    screen_handler.setLevel(logging.DEBUG)
-    logger.addFilter(screen_handler)
-
-    file_handler = logging.FileHandler("logs/logs.log")
-    file_handler.setLevel(logging.DEBUG)
-    logger.addHandler(file_handler)
-
+    if not logger.handlers:
+        level_name = os.getenv("LOG_LEVEL", "INFO")
+        level = getattr(logging, level_name.upper(), logging.INFO)
+        handler = logging.StreamHandler()
+        handler.setLevel(level)
+        log_format = "%(asctime)s %(name)s %(levelname)s %(message)s"
+        formatter = logging.Formatter(log_format)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(level)
     return logger
