@@ -1,5 +1,11 @@
 # SupportDesk AI — Chat And Auto-Triage Any Customer Complaint
 
+## Overview
+
+A 2-agent support desk that runs in your terminal. A **Concierge** agent chats naturally and remembers the conversation. A **Triage** agent turns a messy, free-text complaint into a clean, validated support ticket. A **router** decides, for every message, which agent should handle it — so the user never has to pick a mode.
+
+Built with Python and the raw OpenAI SDK — no agent framework, on purpose.
+
 **Tech:** Python · OpenAI API · Pydantic · python-dotenv  ·  **Type:** Multi-agent (2 agents + router)  ·  **Level:** Beginner
 
 ## Overview
@@ -26,7 +32,7 @@ A real support inbox mixes casual questions with genuine complaints. Sorting eve
 ## Demo
 
 ```
-$ python -m supportdesk.main
+$ python main.py
 SupportDesk AI — type a message, or /quit to exit.
 You: hi! what are your support hours?
 Concierge: Hi there! Our support team is available Monday to Friday,
@@ -72,51 +78,50 @@ You: /quit
 
 ```
 SupportDesk-AI-Chat-And-Auto-Triage-Any-Customer-Complaint/
-├── README.md               the repo's front page
-├── LICENSE                 lets others reuse your code (MIT)
-├── .gitignore              keeps .env, .venv/, __pycache__/ out of git
-├── .env.example            the setting names, no real values
-├── .env                    your real key — never committed
-├── pyproject.toml          makes src/supportdesk an installable package
-├── requirements.txt        the 3 libraries, for pip install -r
-├── src/
-│   └── supportdesk/
-│       ├── __init__.py
-│       ├── main.py             the terminal loop — the file you run
-│       ├── config.py           Config, load_config()
-│       ├── exceptions.py       MissingConfigError
-│       ├── schemas.py          SupportTicket, RouteDecision
-│       ├── models/
-│       │   ├── __init__.py
-│       │   └── llm.py          create_client(), send/stream_message()
-│       ├── agents/
-│       │   ├── __init__.py
-│       │   ├── router.py       decide() -> RouteDecision
-│       │   ├── concierge.py    concierge_agent() -> str
-│       │   └── triage.py       triage_agent() -> SupportTicket | None
-│       ├── prompts/
-│       │   ├── concierge.txt   the Concierge's system prompt
-│       │   ├── triage.txt      the Triage agent's system prompt
-│       │   └── router.txt      the router's system prompt
-│       ├── services/
-│       │   ├── __init__.py
-│       │   └── desk_service.py handle_message(): router -> agent
-│       └── utils/
-│           ├── __init__.py
-│           ├── logger.py       get_logger()
-│           ├── history.py      estimate_tokens(), trim_history()
-│           └── prompts.py      load_prompt(name)
-├── tests/
-│   ├── unit/
-│   │   ├── test_history.py     no API key needed
-│   │   └── test_schemas.py     no API key needed
-│   └── integration/
-│       └── test_live_agents.py real API calls
+├── data/
+│   └── sample/
+│       └── messages.json       test complaints + routing cases
 ├── scripts/
 │   └── triage_samples.py       runs Triage on every sample message
-└── data/
-    └── sample/
-        └── messages.json       test complaints + routing cases
+├── src/
+│   ├── agents/
+│   │   ├── __init__.py
+│   │   ├── concierge.py    concierge_agent() -> str
+│   │   ├── router.py       decide() -> RouteDecision
+│   │   └── triage.py       triage_agent() -> SupportTicket | None
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── llm.py          create_client(), send/stream_message()
+│   ├── prompts/
+│   │   ├── concierge.txt   the Concierge's system prompt
+│   │   ├── router.txt      the router's system prompt
+│   │   └── triage.txt      the Triage agent's system prompt
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── desk_service.py handle_message(): router -> agent
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── history.py      estimate_tokens(), trim_history()
+│   │   ├── logger.py       get_logger()
+│   │   └── prompts.py      load_prompt(name)
+│   ├── __init__.py
+│   ├── config.py           Config, load_config()
+│   ├── exceptions.py       MissingConfigError
+│   └── schemas.py          SupportTicket, RouteDecision
+├── tests/
+│   ├── integration/
+│   │   └── test_live_agents.py real API calls
+│   └── unit/
+│       ├── test_config.py      no API key needed
+│       ├── test_history.py     no API key needed
+│       └── test_schemas.py     no API key needed
+├── .env                    your real key — never committed
+├── .env.example            the setting names, no real values
+├── .gitignore              keeps .env, .venv/, __pycache__/ out of git
+├── LICENSE                 lets others reuse your code (MIT)
+├── main.py                 the terminal loop — the file you run
+├── README.md               the repo's front page
+└── requirements.txt        the 3 libraries, for pip install -r
 ```
 
 ## Getting Started
@@ -129,7 +134,6 @@ cd SupportDesk-AI-Chat-And-Auto-Triage-Any-Customer-Complaint
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pip install -e .
 cp .env.example .env               # then put your key in .env
 ```
 
@@ -142,12 +146,12 @@ Settings are read from `.env` (never committed):
 | `OPENAI_API_KEY` | yes | — | Your OpenAI API key |
 | `LOG_LEVEL` | no | `INFO` | `DEBUG`, `INFO`, `WARNING` or `ERROR` |
 
-The model (`gpt-4o-mini`) is set in one place: `MODEL` in `src/supportdesk/models/llm.py`. Agent prompts are in `src/supportdesk/prompts/`.
+The model (`gpt-4o-mini`) is set in one place: `MODEL` in `src/models/llm.py`. Agent prompts are in `src/prompts/`.
 
 ## Usage
 
 ```bash
-python -m supportdesk.main     # or simply: supportdesk
+python main.py
 ```
 
 Type any message. Small talk and questions go to the Concierge; problem reports become tickets. Type `/quit` to exit.
@@ -155,7 +159,7 @@ Type any message. Small talk and questions go to the Concierge; problem reports 
 To see the Triage agent's ticket for every sample complaint:
 
 ```bash
-python scripts/triage_samples.py
+python -m scripts.triage_samples
 ```
 
 ## Running the Tests
@@ -164,14 +168,15 @@ Run from the repo root:
 
 ```bash
 # unit tests — no API key, no network, under a second
-python tests/unit/test_history.py
-python tests/unit/test_schemas.py
+python -m tests.unit.test_config
+python -m tests.unit.test_history
+python -m tests.unit.test_schemas
 
 # integration tests — real API calls, needs OPENAI_API_KEY
-python tests/integration/test_live_agents.py
+python -m tests.integration.test_live_agents
 ```
 
-The integration tests check conversation memory, the startup key check, ticket extraction (including that no customer name is invented), and routing on clear messages.
+The unit tests check the config, history trimming and the schemas. The integration tests check a first reply, the startup key check, conversation memory, ticket extraction (including that no customer name is invented), and routing on clear messages.
 
 ## Error Handling
 
@@ -191,7 +196,7 @@ The integration tests check conversation memory, the startup key check, ticket e
 - **Model-based router with a reason** — handles wording a keyword list would miss, and the reason makes every decision explainable in the logs.
 - **Concierge as the safe default** — a routing failure leads to a chat reply, never a false ticket.
 - **Token estimate instead of a tokenizer** — about 4 characters per token, with a budget far below the real limit, so no extra dependency is needed.
-- **`src/` layout, installed with `pip install -e .`** — the app, tests and scripts all import the package the same way.
+- **`main.py` at the root, the code in `src/` beside it** — everything runs from the repo root: `python main.py` for the app, `python -m` for the tests and the script.
 
 ## Limitations and Roadmap
 
