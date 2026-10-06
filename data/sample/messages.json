@@ -1,6 +1,11 @@
 {
     "triage": ["Hi, I am shuaib iqbal. I was charged twice this month. Please fix it today.",
-"can't log into my account, tried resetting password twice, still nothing",
-"just wondering what your refund policy"]
-
+                "can't log into my account, tried resetting password twice, still nothing",
+                "just wondering what your refund policy"],
+    "routing": [
+                {"message": "hi there, how are you today?", "expected": "concierge"},
+                {"message": "what are your support hours?", "expected": "concierge"},
+                {"message": "I was charged twice this month, please fix it.", "expected": "triage"},
+                {"message": "The app crasher every time I open settings.", "expected": "triage"}
+    ]
 }

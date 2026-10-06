@@ -6,6 +6,7 @@ from openai import OpenAI
 from src.agents.triage import triage_agent
 from src.config import load_config
 import json 
+from src.services.desk_service import decide
 
 def test_first_reply(client: OpenAI) -> None:
     reply = send_message(client, [], "What's 2+2?")
@@ -50,7 +51,13 @@ def test_no_invented_name(client: OpenAI, samples: dict) -> None:
     if ticket is None or ticket.customer_name is not None:
         result = "WRONG"
     print(f"Case 5 (no name) -> {result}")
-
+def test_routing(client: OpenAI, samples: dict) -> None:
+    for case in samples["routing"]:
+        decision = decide(client, case["message"])
+        result = "OK"
+        if decision.agent != case["expected"]:
+            result = "WRONG"
+        print(f"Case 6 (routing) -> {result}: {decision.agent}")
 if __name__ == "__main__":
     config = load_config()
     client = create_client(config)
@@ -62,3 +69,5 @@ if __name__ == "__main__":
     samples = load_samples()
     test_every_sample_gets_a_ticket(client, samples)
     test_no_invented_name(client, samples)
+    # Step 4
+    test_routing(client, samples)

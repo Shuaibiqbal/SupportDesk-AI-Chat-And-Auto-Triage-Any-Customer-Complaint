@@ -6,4 +6,7 @@ class SupportTicket(BaseModel):
     issue_category: Literal["billing", "technical", "account_access", "other"]
     urgency:  Literal["low", "medium", "high"]
     summary: str
-    
+
+class RouteDecision(BaseModel):
+    agent: Literal["concierge", "triage"]
+    reason: str

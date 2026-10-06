@@ -1,4 +1,4 @@
-from src.schemas import SupportTicket
+from src.schemas import SupportTicket, RouteDecision
 from pydantic import ValidationError
 def test_ticket_without_a_name() -> None:
     ticket = SupportTicket(
@@ -26,6 +26,16 @@ def test_ticket_rejects_unkown_urgency() -> None:
     except ValidationError:
         result = "OK"
     print(f"Case 2: (bad urgnecy) --> {result}")
+
+def test_route_rejects_unknown_agent() -> None:
+    result = "WRONG"
+    try:
+        RouteDecision(agent="billing", reason="looks like billing")
+    except ValidationError:
+        result = "OK"
+    print(f"Case 3 (bad agent name) -> {result}")
+        
 if __name__ == "__main__":
     test_ticket_without_a_name()
     test_ticket_rejects_unkown_urgency()
+    test_route_rejects_unknown_agent()
